@@ -3,10 +3,431 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabletka App</title>
+  <title>Tabletka Mini App</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f5f6fb;
+      color: #121826;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background: linear-gradient(180deg, #eef2ff 0%, #f9fafb 100%);
+    }
+
+    .page-wrapper {
+      width: min(960px, 95vw);
+      padding: 32px 20px 48px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 2.5vw + 1rem, 2.6rem);
+      margin-bottom: 8px;
+    }
+
+    p.lead {
+      margin: 0 auto;
+      max-width: 640px;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: rgba(18, 24, 38, 0.75);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin: 0 0 16px;
+    }
+
+    .medication-list {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .medication-card {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(129, 140, 248, 0.02));
+      display: grid;
+      gap: 12px;
+    }
+
+    .medication-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 4px;
+    }
+
+    .medication-card header h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #3730a3;
+    }
+
+    .medication-card header button {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .medication-card header button:hover,
+    .medication-card header button:focus-visible {
+      background: rgba(239, 68, 68, 0.1);
+      outline: none;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: rgba(18, 24, 38, 0.85);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+      padding: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .fields-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    @media (min-width: 720px) {
+      .fields-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .fields-grid .field:nth-child(1) {
+        grid-column: span 2;
+      }
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actions button {
+      border: none;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .add-button {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      box-shadow: 0 16px 24px rgba(99, 102, 241, 0.25);
+    }
+
+    .add-button:disabled {
+      cursor: not-allowed;
+      filter: grayscale(0.4);
+      opacity: 0.7;
+      box-shadow: none;
+    }
+
+    .save-status {
+      font-size: 0.9rem;
+      color: rgba(55, 48, 163, 0.9);
+    }
+
+    .summary {
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      margin-top: 24px;
+      padding-top: 16px;
+      font-size: 0.95rem;
+    }
+
+    .summary ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: rgba(17, 24, 39, 0.85);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      color: rgba(17, 24, 39, 0.6);
+    }
+
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(17, 24, 39, 0.55);
+    }
+  </style>
 </head>
 <body>
-  <h1>Привет! Это будет мини‑приложение для Telegram‑бота «Таблетница»</h1>
-  <p>Репозиторий инициализирован. Дальше можно наращивать функциональность.</p>
+  <div class="page-wrapper">
+    <header>
+      <h1>Мини‑приложение «Таблетница»</h1>
+      <p class="lead">Заведите карточки с препаратами: название, дозировка, частота приема, даты начала и окончания курса. Приложение сохранит данные локально и поможет передать их в Telegram‑бота.</p>
+    </header>
+
+    <main class="card" role="main">
+      <h2>Мои лекарства</h2>
+      <div class="medication-list" id="medicationList" role="list"></div>
+      <div class="empty-state" id="emptyState">
+        Пока здесь пусто. Добавьте первую карточку препарата, чтобы начать план.
+      </div>
+
+      <div class="actions">
+        <button type="button" class="add-button" id="addMedicationButton">Добавить препарат</button>
+        <span class="save-status" id="saveStatus" aria-live="polite"></span>
+      </div>
+
+      <section class="summary" aria-live="polite" aria-atomic="true">
+        <strong>Итоговый план:</strong>
+        <ul id="summaryList">
+          <li>Добавьте хотя бы один препарат, чтобы увидеть краткий план курса.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      Данные сохраняются на устройстве. В Telegram мини‑апп можно передать заполненные значения одним сообщением.
+    </footer>
+  </div>
+
+  <template id="medicationTemplate">
+    <article class="medication-card" role="listitem">
+      <header>
+        <h3></h3>
+        <button type="button" class="remove-button" title="Удалить препарат">Удалить</button>
+      </header>
+      <div class="fields-grid">
+        <label class="field">
+          <span>Название препарата</span>
+          <input type="text" class="js-name" placeholder="Например, Омеганол" autocomplete="off" required>
+        </label>
+        <label class="field">
+          <span>Дозировка</span>
+          <input type="text" class="js-dose" placeholder="Например, 1 капсула 500 мг" autocomplete="off" required>
+        </label>
+        <label class="field">
+          <span>Приемов в день</span>
+          <input type="number" min="1" max="10" step="1" class="js-frequency" placeholder="Например, 2" required>
+        </label>
+        <label class="field">
+          <span>Начало курса</span>
+          <input type="date" class="js-start" required>
+        </label>
+        <label class="field">
+          <span>Окончание курса</span>
+          <input type="date" class="js-end">
+        </label>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    const MAX_MEDICATIONS = 10;
+    const medicationList = document.getElementById('medicationList');
+    const emptyState = document.getElementById('emptyState');
+    const addButton = document.getElementById('addMedicationButton');
+    const saveStatus = document.getElementById('saveStatus');
+    const summaryList = document.getElementById('summaryList');
+    const medicationTemplate = document.getElementById('medicationTemplate');
+    const STORAGE_KEY = 'tabletka-medications';
+
+    function debounce(fn, delay = 400) {
+      let timeoutId;
+      return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function updateEmptyState() {
+      const hasItems = medicationList.children.length > 0;
+      emptyState.style.display = hasItems ? 'none' : 'block';
+      summaryList.innerHTML = hasItems
+        ? ''
+        : '<li>Добавьте хотя бы один препарат, чтобы увидеть краткий план курса.</li>';
+    }
+
+    function updateSummary() {
+      const rows = Array.from(medicationList.querySelectorAll('.medication-card'));
+      summaryList.innerHTML = '';
+
+      if (!rows.length) {
+        updateEmptyState();
+        return;
+      }
+
+      rows.forEach((row, index) => {
+        const name = row.querySelector('.js-name').value.trim() || `Препарат ${index + 1}`;
+        const dose = row.querySelector('.js-dose').value.trim();
+        const frequency = row.querySelector('.js-frequency').value.trim();
+        const start = row.querySelector('.js-start').value;
+        const end = row.querySelector('.js-end').value;
+
+        const li = document.createElement('li');
+        li.textContent = `${name}: ${dose || 'дозировка не указана'}, ${frequency || '?'} раз(а) в день, курс ${formatDate(start)} – ${formatDate(end)}`;
+        summaryList.appendChild(li);
+      });
+    }
+
+    function formatDate(value) {
+      if (!value) return 'без окончания';
+      const date = new Date(value + 'T00:00:00');
+      return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    const saveState = debounce(() => {
+      const payload = Array.from(medicationList.querySelectorAll('.medication-card')).map(card => ({
+        name: card.querySelector('.js-name').value,
+        dose: card.querySelector('.js-dose').value,
+        frequency: card.querySelector('.js-frequency').value,
+        start: card.querySelector('.js-start').value,
+        end: card.querySelector('.js-end').value
+      }));
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      saveStatus.textContent = 'Сохранено';
+      setTimeout(() => {
+        if (saveStatus.textContent === 'Сохранено') {
+          saveStatus.textContent = '';
+        }
+      }, 2000);
+      updateSummary();
+    }, 300);
+
+    function attachEvents(card) {
+      card.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+          saveStatus.textContent = 'Сохраняем…';
+          saveState();
+        });
+      });
+
+      card.querySelector('.remove-button').addEventListener('click', () => {
+        card.remove();
+        renumberCards();
+        saveState();
+        toggleAddButton();
+        updateEmptyState();
+      });
+    }
+
+    function renumberCards() {
+      Array.from(medicationList.children).forEach((card, index) => {
+        card.querySelector('h3').textContent = `Препарат №${index + 1}`;
+      });
+    }
+
+    function toggleAddButton() {
+      const total = medicationList.children.length;
+      addButton.disabled = total >= MAX_MEDICATIONS;
+      addButton.textContent = total >= MAX_MEDICATIONS ? 'Достигнут лимит (10)' : 'Добавить препарат';
+    }
+
+    function addMedication(data = {}) {
+      if (medicationList.children.length >= MAX_MEDICATIONS) return;
+
+      const card = medicationTemplate.content.firstElementChild.cloneNode(true);
+      medicationList.appendChild(card);
+      renumberCards();
+      attachEvents(card);
+
+      card.querySelector('.js-name').value = data.name || '';
+      card.querySelector('.js-dose').value = data.dose || '';
+      card.querySelector('.js-frequency').value = data.frequency || '';
+      card.querySelector('.js-start').value = data.start || '';
+      card.querySelector('.js-end').value = data.end || '';
+
+      updateEmptyState();
+      toggleAddButton();
+      saveState();
+    }
+
+    addButton.addEventListener('click', () => {
+      addMedication();
+      const lastCard = medicationList.lastElementChild;
+      if (lastCard) {
+        lastCard.querySelector('.js-name').focus();
+      }
+    });
+
+    function restoreState() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        updateEmptyState();
+        return;
+      }
+
+      try {
+        const list = JSON.parse(stored);
+        if (!Array.isArray(list) || !list.length) {
+          updateEmptyState();
+          return;
+        }
+
+        list.slice(0, MAX_MEDICATIONS).forEach(item => addMedication(item));
+        updateSummary();
+      } catch (error) {
+        console.error('Не удалось восстановить состояние', error);
+        updateEmptyState();
+      }
+    }
+
+    restoreState();
+  </script>
 </body>
 </html>
